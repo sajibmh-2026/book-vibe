@@ -1,20 +1,17 @@
-import { use } from "react";
+import { use, useContext} from "react";
+import { BookContext } from "../../Context/BookContext";
 import { useParams } from "react-router";
 
 const bookPromise = fetch('/booksData.json').then(res => res.json())
 
 const BookDetails = () => {
     const { id } = useParams();
-    console.log(id, 'id')
 
-    // const books = useLoaderData();
     const books = use(bookPromise)
-    console.log("books:", books);
 
     const expectedBook = books.find(book => book.bookId == id)
-    console.log(expectedBook, "expectedBook")
     const {
-       
+
         bookName,
         author,
         image,
@@ -26,6 +23,10 @@ const BookDetails = () => {
         publisher,
         yearOfPublishing
     } = expectedBook;
+
+    // use context
+      const {handleMarkAsRead} = useContext(BookContext)
+
     return (
         <div className="grid grid-cols-2 bg-base-100 shadow-sm container mx-auto w-4/5 
         my-8">
@@ -42,11 +43,11 @@ const BookDetails = () => {
                 <h2 className="card-title ">By:{author}</h2>
                 <p className="py-2 border-y">{category}</p>
                 <p>Review: {review}</p>
-                <p>
+                <div>
                     {tags.map((tag, ind) => (
                         <div key={ind} className="badge text-green-500 bg-green-100 font-bold ">{tag}</div>
                     ))}
-                </p>
+                </div>
                 <div className="border-t space-y-3">
                     <div className="flex justify-between items-center gap-2">
                         <span>Number of pages:</span> <span>{totalPages}</span>
@@ -61,10 +62,10 @@ const BookDetails = () => {
                         <span>Rating:</span> <span>{rating}</span>
                     </div>
                     <div className="flex items-center gap-2 ">
-                           <button className="btn ">Mark as read</button>
-                    <button className="btn btn-primary">Add to wish list</button>
+                        <button className="btn" onClick={() => handleMarkAsRead(expectedBook)}>Mark as read</button>
+                        <button className="btn btn-primary">Add to wish list</button>
                     </div>
-                 
+
                 </div>
             </div>
         </div>
