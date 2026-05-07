@@ -1,4 +1,4 @@
-import { use, useContext} from "react";
+import { use, useContext } from "react";
 import { BookContext } from "../../Context/BookContext";
 import { useParams } from "react-router";
 
@@ -25,7 +25,7 @@ const BookDetails = () => {
     } = expectedBook;
 
     // use context
-      const {handleMarkAsRead} = useContext(BookContext)
+    const { handleMarkAsRead , handleWishList } = useContext(BookContext)
 
     return (
         <div className="grid grid-cols-2 bg-base-100 shadow-sm container mx-auto w-4/5 
@@ -63,7 +63,7 @@ const BookDetails = () => {
                     </div>
                     <div className="flex items-center gap-2 ">
                         <button className="btn" onClick={() => handleMarkAsRead(expectedBook)}>Mark as read</button>
-                        <button className="btn btn-primary">Add to wish list</button>
+                        <button className="btn btn-primary" onClick={() => handleWishList(expectedBook)}>Add to wish list</button>
                     </div>
 
                 </div>
