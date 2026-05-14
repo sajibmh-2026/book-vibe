@@ -1,16 +1,26 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { BookContext } from "../../Context/BookContext";
 
-const WishList = () => {
+const ListedWishList = ({ sortingType }) => {
 
-    const {
-        wishList,
-        handleRemoveWishList,
-        handleMarkAsRead
-    } = useContext(BookContext);
+    const { wishList, handleRemoveWishList } = useContext(BookContext);
+
+    // Sorting logic
+    const sortedList = useMemo(() => {
+        if (!sortingType) return wishList;
+
+        const sorted = [...wishList];
+
+        if (sortingType === 'Pages') {
+            sorted.sort((a, b) => b.totalPages - a.totalPages);
+        } else if (sortingType === 'Rating') {
+            sorted.sort((a, b) => b.rating - a.rating);
+        }
+
+        return sorted;
+    }, [wishList, sortingType]);
 
     return (
-
         <div className="space-y-6 mt-8">
 
             <h1 className="text-3xl font-bold mb-6">
@@ -18,7 +28,7 @@ const WishList = () => {
             </h1>
 
             {
-                wishList.map(book => (
+                sortedList.map(book => (
 
                     <div
                         key={book.bookId}
@@ -100,11 +110,8 @@ const WishList = () => {
                             {/* Buttons */}
                             <div className="flex flex-wrap gap-4">
 
-                                <button
-                                    onClick={() => handleMarkAsRead(book)}
-                                    className="btn btn-success text-white rounded-full"
-                                >
-                                    Read Now
+                                <button className="btn btn-info text-white rounded-full">
+                                    View Details
                                 </button>
 
                                 <button
@@ -130,4 +137,4 @@ const WishList = () => {
     );
 };
 
-export default WishList;
+export default ListedWishList;
