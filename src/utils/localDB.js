@@ -1,91 +1,76 @@
-// localDB.js
-
 const getAllReadListFromLocalDB = () => {
-    const allReadList = localStorage.getItem("readList");
-
-    if (allReadList) {
-        return JSON.parse(allReadList);
-    }
-
-    return [];
+    const data = localStorage.getItem("readList");
+    return data ? JSON.parse(data) : [];
 };
 
 const getAllWishListFromLocalDB = () => {
-    const allWishList = localStorage.getItem("wishList");
-
-    if (allWishList) {
-        return JSON.parse(allWishList);
-    }
-
-    return [];
+    const data = localStorage.getItem("wishList");
+    return data ? JSON.parse(data) : [];
 };
 
-
-// ================= READ LIST =================
+// ---------------- ADD ----------------
 
 const addReadListToLocalDB = (book) => {
+    const allBooks = getAllReadListFromLocalDB();
+
+    const exist = allBooks.find(
+        b => b.bookId === book.bookId
+    );
+
+    if (!exist) {
+        allBooks.push(book);
+        localStorage.setItem("readList", JSON.stringify(allBooks));
+    }
+};
+
+const addWishListToLocalDB = (book) => {
+    const allBooks = getAllWishListFromLocalDB();
+
+    const exist = allBooks.find(
+        b => b.bookId === book.bookId
+    );
+
+    if (!exist) {
+        allBooks.push(book);
+        localStorage.setItem("wishList", JSON.stringify(allBooks));
+    }
+};
+
+// ---------------- REMOVE ----------------
+
+const removeReadListFromLocalDB = (id) => {
 
     const allBooks = getAllReadListFromLocalDB();
 
-    const isAlreadyExist = allBooks.find(
-        bk => bk.bookId === book.bookId
+    const updated = allBooks.filter(
+        book => book.bookId !== id
     );
 
-    if (!isAlreadyExist) {
-
-        allBooks.push(book);
-
-        localStorage.setItem(
-            "readList",
-            JSON.stringify(allBooks)
-        );
-    }
-};
-
-
-// ================= WISH LIST =================
-
-const addWishListToLocalDB = (book) => {
-
-    const allBooks = getAllWishListFromLocalDB();
-
-    const isAlreadyExist = allBooks.find(
-        bk => bk.bookId === book.bookId
+    localStorage.setItem(
+        "readList",
+        JSON.stringify(updated)
     );
-
-    if (!isAlreadyExist) {
-
-        allBooks.push(book);
-
-        localStorage.setItem(
-            "wishList",
-            JSON.stringify(allBooks)
-        );
-    }
 };
-
-
-// ================= REMOVE FROM WISHLIST =================
 
 const removeWishListFromLocalDB = (id) => {
 
     const allBooks = getAllWishListFromLocalDB();
 
-    const remainingBooks = allBooks.filter(
+    const updated = allBooks.filter(
         book => book.bookId !== id
     );
 
     localStorage.setItem(
         "wishList",
-        JSON.stringify(remainingBooks)
+        JSON.stringify(updated)
     );
 };
-
 
 export {
     getAllReadListFromLocalDB,
     getAllWishListFromLocalDB,
     addReadListToLocalDB,
     addWishListToLocalDB,
+    removeReadListFromLocalDB,
     removeWishListFromLocalDB
 };

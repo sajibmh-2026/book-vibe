@@ -1,5 +1,3 @@
-// BookProvider.jsx
-
 import { createContext, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -8,14 +6,13 @@ import {
     addWishListToLocalDB,
     getAllReadListFromLocalDB,
     getAllWishListFromLocalDB,
+    removeReadListFromLocalDB,
     removeWishListFromLocalDB
 } from "../utils/localDB";
 
-
 export const BookContext = createContext();
 
-
-const BookProvider = ({ children }) => {
+export const BookProvider = ({ children }) => {
 
     const [readList, setReadList] = useState(
         () => getAllReadListFromLocalDB()
@@ -25,119 +22,100 @@ const BookProvider = ({ children }) => {
         () => getAllWishListFromLocalDB()
     );
 
+    // ---------------- READ ----------------
 
-    // ================= MARK AS READ =================
+    const handleMarkAsRead = (book) => {
 
-    const handleMarkAsRead = (currentBook) => {
-
-        // already in read list?
-        const isExistBook = readList.find(
-            (book) => book.bookId === currentBook.bookId
+        const exist = readList.find(
+            b => b.bookId === book.bookId
         );
 
-        if (isExistBook) {
-
-            toast.error("The book is already in Read List");
-
+        if (exist) {
+            toast.error("Already in Read List");
             return;
         }
 
+        const updated = [...readList, book];
+        setReadList(updated);
+        addReadListToLocalDB(book);
 
-        // add to read list state
-        const updatedReadList = [...readList, currentBook];
-
-        setReadList(updatedReadList);
-
-
-        // add to local storage
-        addReadListToLocalDB(currentBook);
-
-
-        // remove from wishlist
-        const remainingWishList = wishList.filter(
-            (book) => book.bookId !== currentBook.bookId
+        const updatedWish = wishList.filter(
+            b => b.bookId !== book.bookId
         );
 
-        setWishList(remainingWishList);
+        setWishList(updatedWish);
+        removeWishListFromLocalDB(book.bookId);
 
-        removeWishListFromLocalDB(currentBook.bookId);
-
-
-        toast.success(
-            `${currentBook.bookName} added to Read List`
-        );
+        toast.success("Added to Read List");
     };
 
+    // ---------------- WISH ----------------
 
+    const handleWishList = (book) => {
 
-    // ================= ADD TO WISHLIST =================
-
-    const handleWishList = (currentBook) => {
-
-        // already in read list?
-        const isExistInReadList = readList.find(
-            (book) => book.bookId === currentBook.bookId
+        const inRead = readList.find(
+            b => b.bookId === book.bookId
         );
 
-        if (isExistInReadList) {
-
-            toast.error(
-                "This book is already in Read List"
-            );
-
+        if (inRead) {
+            toast.error("Already in Read List");
             return;
         }
 
-
-        // already in wishlist?
-        const isExistBook = wishList.find(
-            (book) => book.bookId === currentBook.bookId
+        const exist = wishList.find(
+            b => b.bookId === book.bookId
         );
 
-        if (isExistBook) {
-
-            toast.error(
-                "The book is already in Wish List"
-            );
-
+        if (exist) {
+            toast.error("Already in Wish List");
             return;
         }
 
+        const updated = [...wishList, book];
+        setWishList(updated);
+        addWishListToLocalDB(book);
 
-        // update state
-        const updatedWishList = [...wishList, currentBook];
-
-        setWishList(updatedWishList);
-
-
-        // update local storage
-        addWishListToLocalDB(currentBook);
-
-
-        toast.success(
-            `${currentBook.bookName} added to Wish List`
-        );
+        toast.success("Added to Wish List");
     };
 
+    // ---------------- REMOVE ----------------
 
+    const handleRemoveReadList = (id) => {
 
-    const data = {
+        const updated = readList.filter(
+            b => b.bookId !== id
+        );
+
+        setReadList(updated);
+        removeReadListFromLocalDB(id);
+
+        toast.success("Removed from Read List");
+    };
+
+    const handleRemoveWishList = (id) => {
+
+        const updated = wishList.filter(
+            b => b.bookId !== id
+        );
+
+        setWishList(updated);
+        removeWishListFromLocalDB(id);
+
+        toast.success("Removed from Wish List");
+    };
+
+    const value = {
         readList,
-        setReadList,
-        handleMarkAsRead,
-
         wishList,
-        setWishList,
-        handleWishList
+        handleMarkAsRead,
+        handleWishList,
+        handleRemoveReadList,
+        handleRemoveWishList
     };
-
 
     return (
-        <BookContext.Provider value={data}>
+        <BookContext.Provider value={value}>
             {children}
         </BookContext.Provider>
     );
 };
-
-
-export default BookProvider;
