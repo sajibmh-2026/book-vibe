@@ -1,12 +1,22 @@
-import { Outlet } from "react-router";
+import { Outlet } from "react-router-dom";
 import Navbar from "../Components/Shared/Navbar";
 
 const MainLayout = () => {
+
     return (
-        <div>
-            <Navbar/>
-            <Outlet/>
+
+        <div className="min-h-screen bg-base-100">
+
+            <Navbar />
+
+            <main>
+
+                <Outlet />
+
+            </main>
+
         </div>
+
     );
 };
 

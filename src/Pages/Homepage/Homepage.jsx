@@ -1,20 +1,34 @@
-import { Suspense, useContext } from "react";
+import { Suspense } from "react";
+
 import Banner from "../../Components/Homepage/Banner";
 import Allbooks from "./Allbooks";
-import { BookContext } from "../../Context/BookContext";
 
 const Homepage = () => {
 
-    const bookContext = useContext(BookContext)
-        console.log(bookContext ,"BookContext")
     return (
+
         <div>
-           <Banner/>
-      <Suspense fallback={<div>Loading...</div>}>
-           <Allbooks />
-    </Suspense>
-         
+
+            {/* Banner */}
+            <Banner />
+
+            {/* Books Section */}
+            <Suspense
+                fallback={
+                    <div className="flex justify-center items-center py-20">
+
+                        <span className="loading loading-spinner loading-lg text-success"></span>
+
+                    </div>
+                }
+            >
+
+                <Allbooks />
+
+            </Suspense>
+
         </div>
+
     );
 };
 
